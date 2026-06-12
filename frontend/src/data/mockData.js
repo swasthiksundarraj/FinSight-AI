@@ -1,0 +1,61 @@
+export const dashboardStats = {
+  totalIncome: 8420.5,
+  totalExpenses: 5180.25,
+  totalSavings: 3240.25,
+  financialHealthScore: 78,
+  incomeChange: 12.4,
+  expensesChange: -3.2,
+  savingsChange: 8.1,
+  healthChange: 5,
+}
+
+export const recentTransactions = [
+  {
+    id: '1',
+    date: '2026-06-12',
+    description: 'Salary Deposit',
+    category: 'Income',
+    amount: 4200.0,
+    type: 'credit',
+  },
+  {
+    id: '2',
+    date: '2026-06-11',
+    description: 'Whole Foods Market',
+    category: 'Groceries',
+    amount: -87.43,
+    type: 'debit',
+  },
+  {
+    id: '3',
+    date: '2026-06-10',
+    description: 'Netflix Subscription',
+    category: 'Entertainment',
+    amount: -15.99,
+    type: 'debit',
+  },
+  {
+    id: '4',
+    date: '2026-06-09',
+    description: 'Electric Bill — ConEd',
+    category: 'Utilities',
+    amount: -124.5,
+    type: 'debit',
+  },
+  {
+    id: '5',
+    date: '2026-06-08',
+    description: 'Freelance Payment',
+    category: 'Income',
+    amount: 1500.0,
+    type: 'credit',
+  },
+  {
+    id: '6',
+    date: '2026-06-07',
+    description: 'Shell Gas Station',
+    category: 'Transport',
+    amount: -52.18,
+    type: 'debit',
+  },
+]
