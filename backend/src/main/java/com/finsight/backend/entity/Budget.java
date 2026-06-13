@@ -5,43 +5,34 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.time.LocalDate;
-
 @Entity
-@Table(name = "transactions")
+@Table(name = "budgets")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Transaction {
+public class Budget {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private Double amount;
-
-    @Column(nullable = false, length = 20)
-    private String type;
-
-    @Column(nullable = false)
     private String category;
 
-    @Column(nullable = false)
-    private String description;
-
-    @Column(name = "transaction_date", nullable = false)
-    private LocalDate transactionDate;
+    @Column(name = "monthly_limit", nullable = false)
+    private Double monthlyLimit;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
 }
+

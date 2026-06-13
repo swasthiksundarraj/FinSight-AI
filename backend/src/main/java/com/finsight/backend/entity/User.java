@@ -10,6 +10,10 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.List;
+
 
 import java.time.LocalDateTime;
 
@@ -30,6 +34,10 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
+    @JsonIgnore
+    private String password;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -37,4 +45,8 @@ public class User {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<Transaction> transactions;
 }

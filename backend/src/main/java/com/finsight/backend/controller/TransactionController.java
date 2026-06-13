@@ -1,7 +1,8 @@
 package com.finsight.backend.controller;
 
+import com.finsight.backend.dto.TransactionRequest;
 import com.finsight.backend.entity.Transaction;
-import com.finsight.backend.repository.TransactionRepository;
+import com.finsight.backend.service.TransactionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,36 +19,51 @@ import java.util.List;
 @RequestMapping("/api/transactions")
 public class TransactionController {
 
-    private final TransactionRepository transactionRepository;
+    private final TransactionService transactionService;
 
-    public TransactionController(TransactionRepository transactionRepository) {
-        this.transactionRepository = transactionRepository;
+    public TransactionController(TransactionService transactionService) {
+        this.transactionService = transactionService;
     }
 
     @PostMapping
-    public ResponseEntity<Transaction> createTransaction(@RequestBody Transaction transaction) {
-        Transaction savedTransaction = transactionRepository.save(transaction);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedTransaction);
+    public ResponseEntity<Transaction> createTransaction(@RequestBody TransactionRequest transactionRequest) {
+        try {
+            Transaction savedTransaction = transactionService.createTransaction(transactionRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedTransaction);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping
     public List<Transaction> getAllTransactions() {
-        return transactionRepository.findAll();
+        return transactionService.getAllTransactions();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Transaction> getTransactionById(@PathVariable Long id) {
-        return transactionRepository.findById(id)
+        return transactionService.getTransactionById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTransaction(@PathVariable Long id) {
-        if (!transactionRepository.existsById(id)) {
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Transaction>> getTransactionsByUser(@PathVariable Long userId) {
+        try {
+            List<Transaction> transactions = transactionService.getTransactionsByUserId(userId);
+            return ResponseEntity.ok(transactions);
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
-        transactionRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTransaction(@PathVariable Long id) {
+        try {
+            transactionService.deleteTransaction(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
