@@ -6,6 +6,9 @@ import com.finsight.backend.dto.RegisterRequest;
 import com.finsight.backend.entity.User;
 import com.finsight.backend.repository.UserRepository;
 import com.finsight.backend.security.JwtTokenProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -68,5 +71,18 @@ public class AuthService {
 
         return new AuthResponse(token, "Login successful");
     }
-}
 
+    /**
+     * Get the authenticated user from the SecurityContext
+     */
+    public User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("User is not authenticated");
+        }
+
+        String email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+    }
+}

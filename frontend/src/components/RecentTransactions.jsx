@@ -1,67 +1,40 @@
-function formatCurrency(amount) {
-  const formatted = Math.abs(amount).toLocaleString('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  })
-  return amount >= 0 ? `+${formatted}` : `-${formatted}`
-}
+import React from 'react';
+import { Link } from 'react-router-dom';
+import '../styles/main.css';
 
-function formatDate(dateStr) {
-  return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  })
-}
-
-function RecentTransactions({ transactions }) {
-  return (
-    <section className="transactions" id="transactions">
-      <div className="transactions__header">
-        <div>
-          <h2 className="transactions__title">Recent Transactions</h2>
-          <p className="transactions__subtitle">Your latest account activity</p>
+const RecentTransactions = ({ transactions = [] }) => {
+  if (transactions.length === 0) {
+    return (
+      <div className="card">
+        <div className="card-header">
+          <h3>Recent Transactions</h3>
         </div>
-        <button type="button" className="transactions__view-all">
-          View all
-        </button>
+        <p className="empty-state">No recent transactions found.</p>
       </div>
+    );
+  }
 
-      <div className="transactions__table-wrapper">
-        <table className="transactions__table">
-          <thead>
-            <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Description</th>
-              <th scope="col">Category</th>
-              <th scope="col" className="transactions__amount-col">
-                Amount
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.map((tx) => (
-              <tr key={tx.id}>
-                <td data-label="Date">{formatDate(tx.date)}</td>
-                <td data-label="Description">{tx.description}</td>
-                <td data-label="Category">
-                  <span className={`transactions__badge transactions__badge--${tx.type}`}>
-                    {tx.category}
-                  </span>
-                </td>
-                <td
-                  data-label="Amount"
-                  className={`transactions__amount transactions__amount--${tx.type}`}
-                >
-                  {formatCurrency(tx.amount)}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+  return (
+    <div className="card">
+      <div className="card-header flex-between">
+        <h3>Recent Transactions</h3>
+        <Link to="/transactions" className="btn-link">View All</Link>
       </div>
-    </section>
-  )
-}
+      <div className="transaction-list">
+        {transactions.map((tx) => (
+          <div key={tx._id || tx.id} className="transaction-item">
+            <div className="transaction-info">
+              <span className="transaction-desc">{tx.description || tx.category}</span>
+              <span className="transaction-date">{new Date(tx.date).toLocaleDateString()}</span>
+            </div>
+            <span className={`transaction-amount ${tx.type === 'expense' ? 'expense' : 'income'}`}>
+              {tx.type === 'expense' ? '-' : '+'}₹{Math.abs(tx.amount).toLocaleString()}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
-export default RecentTransactions
+export default RecentTransactions;

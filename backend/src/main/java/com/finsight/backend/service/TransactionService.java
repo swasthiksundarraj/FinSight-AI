@@ -21,45 +21,35 @@ public class TransactionService {
         this.userRepository = userRepository;
     }
 
-    public Transaction createTransaction(TransactionRequest transactionRequest) {
-        Optional<User> user = userRepository.findById(transactionRequest.getUserId());
-
-        if (user.isEmpty()) {
-            throw new IllegalArgumentException("User not found with ID: " + transactionRequest.getUserId());
-        }
-
+    public Transaction createTransaction(TransactionRequest transactionRequest, User user) {
         Transaction transaction = new Transaction();
         transaction.setAmount(transactionRequest.getAmount());
         transaction.setType(transactionRequest.getType());
         transaction.setCategory(transactionRequest.getCategory());
         transaction.setDescription(transactionRequest.getDescription());
         transaction.setTransactionDate(transactionRequest.getTransactionDate());
-        transaction.setUser(user.get());
+        transaction.setUser(user);
 
         return transactionRepository.save(transaction);
     }
 
-    public List<Transaction> getAllTransactions() {
-        return transactionRepository.findAll();
+    public List<Transaction> getTransactionsByUser(User user) {
+        return transactionRepository.findByUserId(user.getId());
     }
 
-    public Optional<Transaction> getTransactionById(Long id) {
-        return transactionRepository.findById(id);
-    }
-
-    public List<Transaction> getTransactionsByUserId(Long userId) {
-        // Verify that the user exists
-        if (!userRepository.existsById(userId)) {
-            throw new IllegalArgumentException("User not found with ID: " + userId);
+    public Optional<Transaction> getTransactionByIdAndUser(Long id, User user) {
+        Optional<Transaction> transaction = transactionRepository.findById(id);
+        if (transaction.isPresent() && transaction.get().getUser().getId().equals(user.getId())) {
+            return transaction;
         }
-        return transactionRepository.findByUserId(userId);
+        return Optional.empty();
     }
 
-    public void deleteTransaction(Long id) {
-        if (!transactionRepository.existsById(id)) {
-            throw new IllegalArgumentException("Transaction not found with ID: " + id);
+    public void deleteTransaction(Long id, User user) {
+        Optional<Transaction> transaction = getTransactionByIdAndUser(id, user);
+        if (transaction.isEmpty()) {
+            throw new IllegalArgumentException("Transaction not found or unauthorized.");
         }
         transactionRepository.deleteById(id);
     }
 }
-

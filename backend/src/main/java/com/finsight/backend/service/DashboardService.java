@@ -15,18 +15,17 @@ public class DashboardService {
         this.transactionRepository = transactionRepository;
     }
 
-    public Double getTotalIncome() {
-        return transactionRepository.sumAmountByType(TYPE_INCOME);
+    public Double getTotalIncome(Long userId) {
+        return transactionRepository.sumAmountByTypeAndUserId(TYPE_INCOME, userId);
     }
 
-    public Double getTotalExpense() {
-        return transactionRepository.sumAmountByType(TYPE_EXPENSE);
+    public Double getTotalExpense(Long userId) {
+        return transactionRepository.sumAmountByTypeAndUserId(TYPE_EXPENSE, userId);
     }
 
-    public Double getSavings() {
-        Double income = getTotalIncome();
-        Double expense = getTotalExpense();
+    public Double getSavings(Long userId) {
+        Double income = getTotalIncome(userId);
+        Double expense = getTotalExpense(userId);
         return income - expense;
     }
 }
-

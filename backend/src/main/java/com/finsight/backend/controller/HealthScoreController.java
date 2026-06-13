@@ -1,6 +1,8 @@
 package com.finsight.backend.controller;
 
 import com.finsight.backend.dto.HealthScoreResponse;
+import com.finsight.backend.entity.User;
+import com.finsight.backend.service.AuthService;
 import com.finsight.backend.service.HealthScoreService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,29 +14,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class HealthScoreController {
 
     private final HealthScoreService healthScoreService;
+    private final AuthService authService;
 
-    public HealthScoreController(HealthScoreService healthScoreService) {
+    public HealthScoreController(HealthScoreService healthScoreService, AuthService authService) {
         this.healthScoreService = healthScoreService;
+        this.authService = authService;
     }
 
-    /**
-     * GET /api/health-score
-     *
-     * Calculate and return the Financial Health Score based on income, expenses, and savings rate.
-     *
-     * Response:
-     * {
-     *   "totalIncome": 50000,
-     *   "totalExpense": 30000,
-     *   "savings": 20000,
-     *   "savingsRate": 40.0,
-     *   "healthScore": 90
-     * }
-     */
     @GetMapping
     public ResponseEntity<HealthScoreResponse> getHealthScore() {
-        HealthScoreResponse healthScore = healthScoreService.calculateHealthScore();
+        User user = authService.getAuthenticatedUser();
+        HealthScoreResponse healthScore = healthScoreService.calculateHealthScore(user);
         return ResponseEntity.ok(healthScore);
     }
 }
-
